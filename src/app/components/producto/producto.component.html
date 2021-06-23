@@ -1,0 +1,140 @@
+<h3>{{Titulo}} <small>{{TituloAccionABMC[AccionABMC]}}</small></h3>
+
+<!-- Formulario Filtro de busqueda, se ve cuando la accion es Listado(busqueda/listado)-->
+<form name="FormBusqueda" [formGroup]='FormBusqueda' *ngIf="AccionABMC == 'L'">
+<div class="container-fluid">
+  <!-- Botones -->
+  <div class="row justify-content-center botones">
+    <button type="button" class="btn btn-primary" (click)="Agregar()">
+          <i class="fas fa-plus"> </i> 
+          Agregar
+      </button>
+  </div>
+</div>
+</form>
+
+<!-- Tabla de resutados de busqueda y Paginador-->
+<div id="divTablaResultados" *ngIf="AccionABMC == 'L' && Productos?.length > 0">
+<table class="table table-hover table-sm table-bordered table-striped">
+  <thead>
+    <tr>
+      <th class="text-center">ProductoID</th>
+      <th class="text-center">Nombre Producto</th>
+      <th class="text-center">Fecha Alta Producto</th>
+      <th class="text-center">Stock Producto</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let Producto of Productos">
+      <td>{{Producto.ProductoID}}</td>
+      <td>{{Producto.ProductoNombre | uppercase}}</td>
+      <td class="text-right">{{Producto.ProductoFechaAlta | date:'dd/MM/yyyy'}}</td>
+      <td class="text-right">{{Producto.ProductoStock}}</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!--No se encontraron registros-->
+<div class="alert alert-info mensajesAlert" *ngIf="AccionABMC == 'L' && Productos?.length== 0">
+<i class="fas fa-exclamation-sign"></i>{{Mensajes['SD']}}
+</div>
+
+<!-- Registro en Alta,Modificacion y Consulta -->
+<form name="FormRegistro" [formGroup]='FormRegistro' *ngIf="AccionABMC != 'L'">
+<div class="container-fluid">
+  <fieldset [disabled]="AccionABMC==='C'">
+
+    <!--campo Nombre Producto-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label" for="ProductoNombre">Nombre Producto<span
+                  class="text-danger">*</span>:</label>
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <input type="text" class="form-control" formControlName="ProductoNombre"
+       [ngClass]="{'is-invalid': (FormRegistro.controls.ProductoNombre.touched || submitted)  
+          && FormRegistro.controls.ProductoNombre.errors}"/>
+
+        <div class="validacion" *ngIf="(FormRegistro.controls.ProductoNombre.touched || submitted) 
+                      && FormRegistro.controls.ProductoNombre.errors?.required">
+          Dato requerido.
+        </div>
+        <div class="validacion"
+          *ngIf="(FormRegistro.controls.ProductoNombre.touched || submitted) 
+                     && (FormRegistro.controls.ProductoNombre.errors?.minlength || FormRegistro.controls.ProductoNombre.errors?.maxlength) ">
+          Dato texto, 4 a 50 caracteres.
+        </div>
+        <div class="validacion"
+          *ngIf="(FormRegistro.controls.ProductoNombre.touched || submitted) 
+                     && (FormRegistro.controls.ProductoNombre.errors?.pattern) ">
+          No se permiten numeros.
+        </div>
+
+      </div>
+    </div>
+
+    <!--campo fecha alta-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label">Fecha Alta<span
+                  class="text-danger">*</span>:
+        </label>
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <input class="form-control" formControlName="ProductoFechaAlta"
+                         name="FechaAlta"
+                         [ngClass]="{'is-invalid': (FormRegistro.controls.ProductoFechaAlta.touched || submitted)  
+          && FormRegistro.controls.ProductoFechaAlta.errors}" />
+
+        <div class="validacion" *ngIf="(FormRegistro.controls.ProductoFechaAlta.touched || submitted) 
+                     && FormRegistro.controls.ProductoFechaAlta.errors?.required">
+          Dato requerido.
+        </div>
+        <div class="validacion" *ngIf="(FormRegistro.controls.ProductoFechaAlta.touched || submitted) 
+                     && FormRegistro.controls.ProductoFechaAlta.errors?.pattern">
+          Dato fecha, formato dd/mm/aaaa.
+        </div>
+      </div>
+    </div>
+
+    <!--campo stock-->
+    <div class="row">
+    <div class="col-sm-4 col-md-3 offset-md-1">
+      <label class="col-form-label" for="ProductoStock">Cantidad de Stock<span
+                class="text-danger">*</span>:</label>
+    </div>
+    <div class="col-sm-8 col-md-6">
+      <input type="text" name="ProductoStock" class="form-control" formControlName="ProductoStock"
+        [ngClass]="{'is-invalid': (FormRegistro.controls.ProductoStock.touched || submitted)  
+        && FormRegistro.controls.ProductoStock.errors}" />
+      <div class="validacion" *ngIf="(FormRegistro.controls.ProductoStock.touched || submitted) 
+                   && FormRegistro.controls.ProductoStock.errors?.required">
+        Dato requerido.
+      </div>
+      <div class="validacion" *ngIf="(FormRegistro.controls.ProductoStock.touched || submitted) 
+           && FormRegistro.controls.ProductoStock.errors?.pattern">
+        Dato numérico, 1 a 300 dígitos.
+      </div>
+    </div>
+  </div>
+
+    <!-- Botones Grabar, Cancelar/Volver' -->
+    <hr>
+    <div class="row justify-content-center botones">
+      <button type="button" *ngIf="AccionABMC!=='C'" class="btn btn-primary" (click)="Grabar()">
+          <i class="fas fa-check"></i> Grabar
+      </button>
+      &nbsp;
+      <button type="button" class="btn btn-warning" (click)="Volver()">
+          <i class="fas fa-undo"></i> {{AccionABMC=='C' ? 'Volver' : 'Cancelar'}}
+      </button>
+    </div>
+
+    <!--texto: Revisar los datos ingresados...-->
+    <div *ngIf="submitted && FormRegistro.invalid" class="row alert alert-danger mensajesAlert">
+      <i class="fas fa-exclamation-sign"></i>{{Mensajes['RD']}}
+    </div>
+  </fieldset>
+</div>
+</form>
